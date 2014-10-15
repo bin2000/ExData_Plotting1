@@ -12,7 +12,7 @@ powerData2Days <- rbind(subset(powerData, Date == "1/2/2007"),
 png(filename="plot4.png", width = 480, height = 480, units = "px")
 
 # multiple plots
-par(mfrow=c(2,2), mar=c(4,4,1,0.5))
+par(mfrow=c(2,2))
 
 # plot 1
 with(powerData2Days, plot(Global_active_power,type="l", xaxt="n", ylab="Global Active Power (kilowatts)", xlab=""))
