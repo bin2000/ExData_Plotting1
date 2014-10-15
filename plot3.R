@@ -1,28 +1,22 @@
+# 3
 # read data
-powerData <- read.table('household_power_consumption.txt', sep=';',
-                        header=T, 
-                        colClasses = 
-                          c('character', 'character','numeric', 'numeric', 
-                            'numeric', 'numeric', 'numeric', 'numeric', 'numeric'), 
-                        na.strings='?')
+powerData <- read.table(file="household_power_consumption.txt", 
+                        sep=";", header = TRUE, stringsAsFactors = FALSE)
 
-
-powerData$DateTime <- strptime(paste(powerData$Date, data$Time), "%d/%m/%Y %H:%M:%S")
-
-powerData <- subset(powerData, as.Date(DateTime) >= as.Date("2007-02-01") & as.Date(DateTime) <= as.Date("2007-02-02"))
-
-
+# only need data from 2 days
+powerData2Days <- rbind(subset(powerData, Date == "1/2/2007"),
+                        subset(powerData, Date == "2/2/2007"))
 # plot
-png("plot3.png", height=480, width=480)
+png(filename="plot3.png", width = 480, height = 480, units = "px")
 
-plot(powerData$DateTime, powerData$Sub_metering_1, pch=NA, xlab="", ylab="Energy sub metering")
+with(powerData2Days, plot(Sub_metering_1,type="l", xaxt="n", ylab="Energy sub metering", xlab=""))
 
-lines(powerData$DateTime, data$Sub_metering_1)
-lines(powerData$DateTime, data$Sub_metering_2, col='red')
-lines(powerData$DateTime, data$Sub_metering_3, col='blue')
+with(powerData2Days, lines(Sub_metering_2, col="red"))
 
-legend('topright', c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-        lty = c(1,1,1),
-        col = c('black', 'red', 'blue'))
+with(powerData2Days, lines(Sub_metering_3, col="blue"))
+
+axis(1,c(1,nrow(powerData2Days)/2, nrow(powerData2Days)),c("Thu","Fri","Sat"))
+
+legend("topright", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), col=c("black","red","blue"), lwd=1, cex=1)
 
 dev.off()

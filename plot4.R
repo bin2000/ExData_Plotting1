@@ -1,44 +1,35 @@
+# 4
 # read data
-powerData <- read.table('household_power_consumption.txt', sep=';',
-                        header=T, 
-                        colClasses = 
-                          c('character', 'character','numeric', 'numeric', 
-                            'numeric', 'numeric', 'numeric', 'numeric', 'numeric'), 
-                        na.strings='?')
+powerData <- read.table(file="household_power_consumption.txt", 
+                        sep=";", header = TRUE, stringsAsFactors = FALSE)
 
-
-powerData$DateTime <- strptime(paste(powerData$Date, data$Time), "%d/%m/%Y %H:%M:%S")
-
-powerData <- subset(powerData, as.Date(DateTime) >= as.Date("2007-02-01") & as.Date(DateTime) <= as.Date("2007-02-02"))
-
+# only need data from 2 days
+powerData2Days <- rbind(subset(powerData, Date == "1/2/2007"),
+                        subset(powerData, Date == "2/2/2007"))
 
 # plot
-png("plot4.png", height=480, width=480)
+# start plotting
+png(filename="plot4.png", width = 480, height = 480, units = "px")
 
-par(mfrow=c(2,2))
+# multiple plots
+par(mfrow=c(2,2), mar=c(4,4,1,0.5))
 
-plot(powerData$DateTime, powerData$Global_active_power, pch=NA, xlab="", ylab="Global Active Power (kilowatts)")
+# plot 1
+with(powerData2Days, plot(Global_active_power,type="l", xaxt="n", ylab="Global Active Power (kilowatts)", xlab=""))
+axis(1,c(1,nrow(powerData2Days)/2, nrow(powerData2Days)),c("Thu","Fri","Sat"))
 
-lines(powerData$DateTime, powerData$Global_active_power)
+# plot 2
+with(powerData2Days, plot(Voltage,type="l", xaxt="n", ylab="Voltage", xlab="datetime"))
+axis(1,c(1,nrow(powerData2Days)/2, nrow(powerData2Days)),c("Thu","Fri","Sat"))
 
-plot(powerData$DateTime, powerData$Voltage, ylab="Voltage", xlab="datetime", pch=NA)
+# plot 3
+with(powerData2Days, plot(Sub_metering_1,type="l", xaxt="n", ylab="Energy sub metering", xlab=""))
+with(powerData2Days, lines(Sub_metering_2, col="red"))
+with(powerData2Days, lines(Sub_metering_3, col="blue"))
+axis(1,c(1,nrow(powerData2Days)/2, nrow(powerData2Days)),c("Thu","Fri","Sat"))
+legend("topright", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), col=c("black","red","blue"), lwd=1, border="white", cex=1)
 
-lines(powerData$DateTime, powerData$Voltage)
-
-plot(powerData$DateTime, powerData$Sub_metering_1, pch=NA, xlab="", ylab="Energy sub metering")
-
-# Draw the lines
-lines(powerData$DateTime, powerData$Sub_metering_1, col='black')
-lines(powerData$DateTime, powerData$Sub_metering_2, col='red')
-lines(powerData$DateTime, powerData$Sub_metering_3, col='blue')
-
-# Draw the summary
-legend('topright', c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-       lty = c(1,1,1), col = c('black', 'red', 'blue'), bty = 'n')
-
-# Global reactive power plot
-with(powerData, plot(DateTime, Global_reactive_power, xlab='datetime', pch=NA))
-with(powerData, lines(DateTime, Global_reactive_power))
-
-# Close PNG file
+# plot 4
+with(powerData2Days, plot(Global_reactive_power,type="l", xaxt="n", xlab="datetime"))
+axis(1,c(1,nrow(powerData2Days)/2, nrow(powerData2Days)),c("Thu","Fri","Sat"))
 dev.off()
